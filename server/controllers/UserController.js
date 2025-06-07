@@ -1,15 +1,16 @@
-import { Webhook } from "svix"
+import { Webhook } from 'svix';
+import userModel from '../models/userModels';
 
 const clerkWebhooks=async (req,res)=>{
     try {
-        const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+        const whook=new Webhook(process.env.CLERK_WEBHOOK_SECRET)
 
         await whook.verify(JSON.stringify(req.body),{
                 "svix-id":req.headers['svix-id'],
                 "svix-timestamp":req.headers['svix-timestamp'], 
                 "svix-signature":req.headers['svix-signature']
-            });
-
+            })  
+    // If verification is successful, proceed with your logic
         const {data,type}=req.body
 
         switch (type) {
@@ -54,6 +55,7 @@ const clerkWebhooks=async (req,res)=>{
 
     } catch (error) {
         console.error("Webhook verification failed:", error);
+        res.json({success:false, message:"Webhook verification failed"})
         return res.status(400).send("Invalid webhook signature");
     }
 }
